@@ -381,82 +381,24 @@ banner = f"""
 
 clear()
 print(water(banner), end="")
-while True:
-    file = input(purple("        [>] Enter the python file you wish to obfuscate [script.py] : ") + "\033[38;2;148;0;230m")
-    if not os.path.exists(file):
-        print(red("        [!] Error : That file does not exist"), end="")
-    else:
-        break
 
-carbonate = False
+file = sys.argv[1] + "\\" + sys.argv[2]
+if not os.path.exists(file):
+    print(red(f"        [!] Error : That file does not exist {file}"), end="")
+    exit(1)
+
+bug = True
+junk = True
+rename = True
+carbonate = True
 oxy = False
-junk = False
-bug = False
-
-while True:
-    ans = input(purple("        [>] AntiDebug [y/n] : ") + "\033[38;2;148;0;230m").lower()
-    if ans == "y":
-        bug = True
-        break
-    elif ans == "n":
-        bug = False
-        break
-    else:
-        print(red(f"        [!] Error : Invalid option [y/n]"), end="")
-    
-while True:
-    ans = input(purple("        [>] Junk Code [y/n] : ") + "\033[38;2;148;0;230m").lower()
-    if ans == "y":
-        junk = True
-        break
-    elif ans == "n":
-        junk = False
-        break
-    else:
-        print(red(f"        [!] Error : Invalid option [y/n]"), end="")
-
-while True:
-    ans = input(purple("        [>] Rename Classes, Functions, Variables & Parameters [y/n] : ") + "\033[38;2;148;0;230m").lower()
-    if ans == "y":
-        rename = True
-        break
-    elif ans == "n":
-        rename = False
-        break
-    else:
-        print(red(f"        [!] Error : Invalid option [y/n]"), end="")
-
-if rename:
-    while True:
-        ans = input(purple("        [>] Carbon (Offline) or Oxyry [c/o] : ") + "\033[38;2;148;0;230m").lower()
-        if ans == "c":
-            carbonate = True
-            break
-        elif ans == "o":
-            oxy = True
-            break
-        else:
-            print(red(f"        [!] Error : Invalid option [c/o]"), end="")
-
-
-while True:
-    ans = input(purple("        [>] One Line Obfuscation (Can't compile to exe) [y/n] : ") + "\033[38;2;148;0;230m").lower()
-    if ans == "y":
-        extra = True
-        break
-    elif ans == "n":
-        extra = False
-        break
-    else:
-        print(red(f"        [!] Error : Invalid option [y/n]"), end="")
+extra = False
 
 print(" ")
 key = base64.b64encode(os.urandom(32)).decode()
 with open(file, "r", encoding='utf-8') as f:
     src = f.read()
 
-if junk:
-    src = anubis(src)
 if bug:
     src = bugs(src)
 if junk:
@@ -469,31 +411,12 @@ if extra:
     src = Encryption(key.encode()).write(key, src)
 
 
-name = f"{file[:-3]}-obf.py"
+name = f"{sys.argv[1]}\\obf\\{sys.argv[2]}"
+index = name.rindex("\\")
+folder = f"{name[:index]}"
+if not os.path.exists(folder):
+    os.makedirs(folder)
 with open(name, "w", encoding='utf-8') as f:
     f.write(src)
 
 print(blue(f"        [>] Code has been successfully obfuscated @ {name}"), end="")
-
-if extra == False:
-    compile = False
-    while True:
-        ans = input(purple("        [>] Would you like to compile to an exe [y/n] : ") + "\033[38;2;148;0;230m").lower()
-        if ans == "y":
-            compile = True
-            break
-        elif ans == "n":
-            compile = False
-            break
-        else:
-            print(red(f"        [!] Error : Invalid option [y/n]"), end="")
-
-    if compile == True:
-        basic_params = ["nuitka", "--mingw64", "--onefile", "--enable-plugin=numpy", "--include-module=psutil", "--remove-output", "--assume-yes-for-downloads", name]
-        p = subprocess.Popen(basic_params, stdout=subprocess.DEVNULL, shell=True, cwd=os.getcwd())
-        print(red("\n        [!] Exe may take a while to compile\n        [!] Nuitka Information:\n\n"), end="")
-        p.wait()
-        print(blue(f"\n        [>] Code has been successfully compiled @ {name[:-3] + '.exe'}"), end="")
-
-print(blue("\n        [>] Press any key to exit... "), end="")
-pause(); clear(); leave()
